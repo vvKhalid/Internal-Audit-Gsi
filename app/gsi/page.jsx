@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { saveAs } from "file-saver";
 import { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun } from "docx";
-import PptxGenJS from "pptxgenjs";
 const XLSX = require("xlsx");
 
 
@@ -171,128 +170,6 @@ const updateImages = (index, files) => {
   const blob = await Packer.toBlob(doc);
   saveAs(blob, "GSI_Report.docx");
 };
-
- const generatePPT = async () => {
-  const pptx = new PptxGenJS();
-
-  // SLIDE 1: Title Slide
-  const slide = pptx.addSlide({ background: { fill: "FFFFFF" } });
-
-  // Left logo (Audit)
-  slide.addImage({
-     path: "/ia.png",
-    x: 0.1,
-    y: 0.1,
-    w: 2,
-    h: 2,
-  });
-
-  // Right logo (MNGHA)
-  slide.addImage({
-   
-path: "/mngha.png",
-    x: 8.0,
-    y: 0.2,
-    w: 2,
-    h: 2,
-  });
-
-
-  // Big red title centered
-  slide.addText("Inspection Pics", {
-    x: 0.7, y: 2.5, w: 8, h: 1,
-    align: "center",
-    fontSize: 36,
-    bold: true,
-    color: "#b71c1c",
-    fontFace: "Arial"
-  });
-
-  // Centered date and location (use first entry or blank if none)
-  const mainDate = entries[0]?.date || "(date)";
-  const mainLocation = entries[0]?.location || "(Location)";
-
-  slide.addText(mainDate, {
-    x: 0.7, y: 3.7, w: 8, h: 0.7,
-    align: "center",
-    fontSize: 28,
-    bold: false,
-    color: "#1e355d"
-  });
-
-  slide.addText(mainLocation, {
-    x: 0.7, y: 4.25, w: 8, h: 0.7,
-    align: "center",
-    fontSize: 28,
-    bold: false,
-    color: "#1e355d"
-  });
-
-  // --- SLIDE 2+: Observation Photos ---
-  let photoCounter = 1;
-  for (const entry of entries) {
-    if (!entry.images || entry.images.length === 0) continue;
-
-    // Photos text (eg: "Photos#1,2 (Location)")
-    let photoNumbers = "";
-    if (entry.images.length === 1) {
-      photoNumbers = `Photo#${photoCounter}`;
-    } else {
-      photoNumbers = `Photos#${photoCounter},${photoCounter + 1}`;
-    }
-
-    const obsDate = entry.date || "day–month, year";
-    const imgSlide = pptx.addSlide();
-
-  
-    // Place images (up to 2)
-    for (let i = 0; i < entry.images.length; i++) {
-      const img = entry.images[i];
-      const base64 = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target.result);
-        reader.readAsDataURL(img);
-      });
-      imgSlide.addImage({
-        data: base64,
-        x: i === 0 ? 0.25 : 6.75,
-        y: 0.5,
-        w: 3,
-        h: 4.5,
-      });
-    }
-
-    // Caption left: Photos# info
-    imgSlide.addText(`${photoNumbers} (${entry.location || ""})`, {
-      x: 0.25,
-      y: 5.3,
-      w: 5,
-      h: 0.4,
-      fontSize: 8,
-      color: "#666",
-      align: "left",
-      fontFace: "Arial"
-    });
-
-    // Caption right: date
-    imgSlide.addText(obsDate, {
-      x: 6.75,
-      y: 5.3,
-      w: 2.5,
-      h: 0.4,
-      fontSize: 8,
-      color: "#666",
-      align: "right",
-      fontFace: "Arial"
-    });
-
-    photoCounter += entry.images.length;
-  }
-
-  pptx.writeFile("Inspection_Pics.pptx");
-};
-
-
  
   return (
     <div style={{
