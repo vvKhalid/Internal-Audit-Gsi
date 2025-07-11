@@ -170,6 +170,10 @@ const updateImages = (index, files) => {
   const blob = await Packer.toBlob(doc);
   saveAs(blob, "GSI_Report.docx");
 };
+
+
+
+
  
   return (
     <div style={{
@@ -345,7 +349,6 @@ const updateImages = (index, files) => {
         <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 18 }}>
           <button style={mainBtnStyle} onClick={addEntry}>Add Observation</button>
           <button style={mainBtnStyle} onClick={generateWord}>Generate Word Report</button>
-          <button style={mainBtnStyle} onClick={generatePPT}>Generate PowerPoint Report</button>
           <button style={mainBtnStyle} onClick={exportToExcel}>Export to Excel</button>
         </div>
       </div>
